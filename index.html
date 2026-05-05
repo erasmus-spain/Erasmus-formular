@@ -1,1 +1,1606 @@
+<!DOCTYPE html>
 
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Europass – Acuerdo de aprendizaje (Herramienta)</title>
+<style>
+/* =====================================================================
+   GRUNDLAYOUT (Editor-Ansicht)
+===================================================================== */
+:root {
+  --eu-blue: #003399;
+  --eu-blue-dark: #002266;
+  --eu-blue-light: #e8eef9;
+  --eu-yellow: #ffcc00;
+  --border: #b8b8b8;
+  --border-light: #d8d8d8;
+  --text: #1a1a1a;
+  --muted: #555;
+  --bg: #f4f4f6;
+  --bg-card: #ffffff;
+}
+
+- { box-sizing: border-box; }
+
+html, body {
+margin: 0;
+padding: 0;
+font-family: “Segoe UI”, “Helvetica Neue”, Arial, sans-serif;
+background: var(–bg);
+color: var(–text);
+font-size: 14px;
+line-height: 1.45;
+}
+
+/* Toolbar */
+.toolbar {
+position: sticky;
+top: 0;
+z-index: 100;
+background: var(–eu-blue);
+color: #fff;
+padding: 12px 24px;
+display: flex;
+flex-wrap: wrap;
+gap: 10px;
+align-items: center;
+box-shadow: 0 2px 6px rgba(0,0,0,.15);
+}
+.toolbar h1 {
+font-size: 16px;
+margin: 0;
+flex: 1 1 auto;
+font-weight: 600;
+letter-spacing: .3px;
+}
+.toolbar h1 .sub {
+font-weight: 400;
+opacity: .85;
+font-size: 13px;
+margin-left: 8px;
+}
+
+.btn {
+background: #fff;
+color: var(–eu-blue);
+border: 1px solid #fff;
+padding: 8px 14px;
+font-size: 13px;
+font-weight: 600;
+border-radius: 4px;
+cursor: pointer;
+transition: background .15s, color .15s;
+}
+.btn:hover { background: var(–eu-yellow); border-color: var(–eu-yellow); color: var(–eu-blue-dark); }
+.btn.secondary { background: transparent; color: #fff; }
+.btn.secondary:hover { background: rgba(255,255,255,.15); color: #fff; }
+.btn.danger { background: #c62828; color: #fff; border-color: #c62828; }
+.btn.danger:hover { background: #b71c1c; border-color: #b71c1c; color: #fff; }
+
+.btn-file {
+position: relative;
+overflow: hidden;
+display: inline-block;
+}
+.btn-file input[type=file] {
+position: absolute;
+inset: 0;
+opacity: 0;
+cursor: pointer;
+}
+
+/* Tab-Switch Editor / Vorschau */
+.tabs {
+display: flex;
+gap: 4px;
+background: #fff;
+padding: 0 24px;
+border-bottom: 1px solid var(–border-light);
+}
+.tab {
+padding: 12px 20px;
+cursor: pointer;
+border-bottom: 3px solid transparent;
+font-weight: 600;
+color: var(–muted);
+font-size: 14px;
+}
+.tab.active {
+color: var(–eu-blue);
+border-bottom-color: var(–eu-blue);
+}
+
+/* Editor */
+.editor {
+max-width: 1100px;
+margin: 0 auto;
+padding: 24px 24px 80px;
+}
+
+.section {
+background: var(–bg-card);
+border: 1px solid var(–border-light);
+border-radius: 6px;
+margin-bottom: 18px;
+overflow: hidden;
+}
+.section > h2 {
+background: var(–eu-blue);
+color: #fff;
+margin: 0;
+padding: 10px 16px;
+font-size: 14px;
+font-weight: 600;
+letter-spacing: .5px;
+text-transform: uppercase;
+}
+.section .body {
+padding: 16px;
+}
+.section .hint {
+color: var(–muted);
+font-size: 12px;
+margin: 0 0 12px;
+font-style: italic;
+}
+
+.grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 12px;
+}
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+.full { grid-column: 1 / -1; }
+
+label {
+display: block;
+font-size: 12px;
+color: var(–muted);
+font-weight: 600;
+text-transform: uppercase;
+letter-spacing: .3px;
+margin-bottom: 4px;
+}
+input[type=text],
+input[type=email],
+input[type=tel],
+input[type=date],
+select,
+textarea {
+width: 100%;
+padding: 8px 10px;
+border: 1px solid var(–border);
+border-radius: 4px;
+font-size: 13px;
+font-family: inherit;
+background: #fff;
+color: var(–text);
+}
+textarea {
+resize: vertical;
+min-height: 60px;
+}
+input:focus, select:focus, textarea:focus {
+outline: none;
+border-color: var(–eu-blue);
+box-shadow: 0 0 0 2px rgba(0,51,153,.15);
+}
+
+.subgroup {
+border-left: 3px solid var(–eu-blue-light);
+padding: 10px 14px;
+margin-bottom: 14px;
+background: #fafbfd;
+border-radius: 0 4px 4px 0;
+}
+.subgroup h3 {
+margin: 0 0 10px;
+font-size: 13px;
+text-transform: uppercase;
+color: var(–eu-blue);
+letter-spacing: .5px;
+}
+
+.checkbox-row {
+display: flex;
+gap: 18px;
+flex-wrap: wrap;
+margin-bottom: 12px;
+}
+.checkbox-row label {
+display: flex;
+align-items: center;
+gap: 6px;
+text-transform: none;
+font-weight: normal;
+font-size: 13px;
+color: var(–text);
+margin: 0;
+cursor: pointer;
+}
+.checkbox-row input { width: auto; margin: 0; }
+
+.logo-preview {
+display: inline-flex;
+align-items: center;
+gap: 12px;
+padding: 8px;
+border: 1px dashed var(–border);
+border-radius: 4px;
+background: #fafafa;
+margin-top: 6px;
+}
+.logo-preview img {
+max-height: 60px;
+max-width: 200px;
+display: block;
+}
+.logo-preview .empty {
+color: var(–muted);
+font-style: italic;
+font-size: 12px;
+}
+
+.notice {
+background: #fff8e1;
+border-left: 4px solid var(–eu-yellow);
+padding: 10px 14px;
+margin-bottom: 18px;
+font-size: 13px;
+border-radius: 0 4px 4px 0;
+}
+.notice strong { color: var(–eu-blue-dark); }
+
+/* =====================================================================
+DRUCKBARE DOKUMENT-VORSCHAU
+===================================================================== */
+#preview {
+display: none;
+background: var(–bg);
+padding: 30px 0 80px;
+}
+#preview.active { display: block; }
+.editor.hidden { display: none; }
+
+.doc {
+width: 210mm;
+min-height: 297mm;
+margin: 0 auto;
+background: #fff;
+padding: 18mm 18mm 22mm;
+box-shadow: 0 2px 10px rgba(0,0,0,.12);
+font-family: “Segoe UI”, “Helvetica Neue”, Arial, sans-serif;
+color: #000;
+font-size: 10pt;
+line-height: 1.35;
+position: relative;
+}
+
+.doc-header {
+display: flex;
+align-items: center;
+border-bottom: 2px solid var(–eu-blue);
+padding-bottom: 8px;
+margin-bottom: 14px;
+gap: 14px;
+}
+.doc-header .logo-box {
+flex: 0 0 auto;
+min-width: 120px;
+max-width: 180px;
+display: flex;
+align-items: center;
+justify-content: flex-start;
+}
+.doc-header .logo-box img {
+max-height: 55px;
+max-width: 180px;
+object-fit: contain;
+}
+.doc-header .logo-box .placeholder {
+width: 120px;
+height: 50px;
+border: 1px dashed #aaa;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 9pt;
+color: #999;
+}
+.doc-header .title-block {
+flex: 1;
+text-align: right;
+}
+.doc-header .title-block .europass {
+font-size: 16pt;
+font-weight: 700;
+color: var(–eu-blue);
+letter-spacing: .5px;
+}
+.doc-header .title-block .subtitle {
+font-size: 10pt;
+color: var(–eu-blue-dark);
+margin-top: 2px;
+}
+
+.doc h2.section-title {
+background: var(–eu-blue);
+color: #fff;
+font-size: 10pt;
+text-transform: uppercase;
+letter-spacing: .8px;
+padding: 5px 10px;
+margin: 14px 0 8px;
+font-weight: 600;
+}
+
+.doc .person-name {
+font-size: 14pt;
+font-weight: 700;
+color: var(–eu-blue-dark);
+margin: 6px 0 2px;
+}
+.doc .person-meta {
+display: flex;
+justify-content: space-between;
+font-size: 10pt;
+color: #333;
+margin-bottom: 10px;
+padding-bottom: 6px;
+border-bottom: 1px solid #ccc;
+gap: 16px;
+flex-wrap: wrap;
+}
+
+.doc table.info {
+width: 100%;
+border-collapse: collapse;
+margin-bottom: 8px;
+font-size: 9.5pt;
+}
+.doc table.info th,
+.doc table.info td {
+border: 1px solid #b0b0b0;
+padding: 5px 7px;
+text-align: left;
+vertical-align: top;
+}
+.doc table.info th {
+background: var(–eu-blue-light);
+font-weight: 600;
+font-size: 8.5pt;
+text-transform: uppercase;
+color: var(–eu-blue-dark);
+letter-spacing: .3px;
+}
+.doc table.info td.empty {
+color: #aaa;
+font-style: italic;
+}
+
+.doc .label-line {
+font-size: 8.5pt;
+text-transform: uppercase;
+font-weight: 600;
+color: var(–eu-blue-dark);
+letter-spacing: .3px;
+margin-top: 8px;
+margin-bottom: 2px;
+}
+.doc .value-line {
+border: 1px solid #b0b0b0;
+padding: 5px 8px;
+background: #fcfcfc;
+min-height: 18px;
+font-size: 10pt;
+white-space: pre-wrap;
+word-wrap: break-word;
+}
+.doc .value-line.empty {
+color: #bbb;
+font-style: italic;
+}
+
+.doc .lo-block {
+margin-bottom: 10px;
+padding: 6px 8px;
+border-left: 3px solid var(–eu-blue);
+background: #f6f8fc;
+}
+.doc .lo-block .lo-title {
+font-weight: 600;
+color: var(–eu-blue-dark);
+font-size: 10pt;
+margin-bottom: 3px;
+}
+.doc .lo-block .lo-desc {
+font-size: 9.5pt;
+white-space: pre-wrap;
+}
+
+.doc .signatures {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 10px;
+margin-top: 14px;
+}
+.doc .sig-box {
+border: 1px solid #b0b0b0;
+padding: 8px 10px;
+font-size: 9pt;
+min-height: 90px;
+}
+.doc .sig-box .sig-title {
+font-weight: 600;
+color: var(–eu-blue-dark);
+text-transform: uppercase;
+font-size: 8.5pt;
+letter-spacing: .3px;
+margin-bottom: 4px;
+border-bottom: 1px solid #ddd;
+padding-bottom: 3px;
+}
+.doc .sig-box .sig-row {
+margin-top: 4px;
+}
+.doc .sig-box .sig-line {
+margin-top: 22px;
+border-top: 1px solid #888;
+padding-top: 3px;
+font-size: 8.5pt;
+color: #555;
+text-align: center;
+}
+
+.doc .footer {
+position: absolute;
+bottom: 8mm;
+left: 18mm;
+right: 18mm;
+border-top: 1px solid #ccc;
+padding-top: 4px;
+font-size: 8pt;
+color: #777;
+display: flex;
+justify-content: space-between;
+}
+
+.doc .competencies-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 8px;
+}
+.doc .competency {
+border: 1px solid #ccc;
+padding: 6px 8px;
+background: #fafbfd;
+}
+.doc .competency .c-title {
+font-weight: 600;
+font-size: 9pt;
+color: var(–eu-blue-dark);
+text-transform: uppercase;
+margin-bottom: 3px;
+}
+.doc .competency .c-desc {
+font-size: 9pt;
+white-space: pre-wrap;
+}
+
+/* =====================================================================
+DRUCK
+===================================================================== */
+@page {
+size: A4;
+margin: 0;
+}
+
+@media print {
+body { background: #fff; }
+.toolbar, .tabs, .editor, .notice, #preview > .print-hint { display: none !important; }
+#preview { display: block !important; padding: 0; background: #fff; }
+.doc {
+box-shadow: none;
+margin: 0;
+width: 210mm;
+min-height: 297mm;
+page-break-after: always;
+}
+.doc:last-child { page-break-after: auto; }
+.avoid-break { page-break-inside: avoid; }
+}
+
+.print-hint {
+max-width: 210mm;
+margin: 0 auto 14px;
+padding: 10px 14px;
+background: #fff8e1;
+border-left: 4px solid var(–eu-yellow);
+font-size: 13px;
+border-radius: 0 4px 4px 0;
+}
+
+/* Repeater controls */
+.repeater-item {
+position: relative;
+margin-bottom: 12px;
+padding: 12px;
+border: 1px solid var(–border-light);
+border-radius: 4px;
+background: #fafbfd;
+}
+.repeater-item .remove-btn {
+position: absolute;
+top: 8px;
+right: 8px;
+background: transparent;
+border: 1px solid #c62828;
+color: #c62828;
+width: 24px;
+height: 24px;
+border-radius: 4px;
+cursor: pointer;
+font-size: 14px;
+line-height: 1;
+}
+.repeater-item .remove-btn:hover { background: #c62828; color: #fff; }
+.repeater-item h4 {
+margin: 0 0 10px;
+color: var(–eu-blue);
+font-size: 13px;
+text-transform: uppercase;
+letter-spacing: .3px;
+}
+.add-btn {
+background: var(–eu-blue);
+color: #fff;
+border: none;
+padding: 7px 14px;
+border-radius: 4px;
+font-size: 13px;
+cursor: pointer;
+font-weight: 600;
+}
+.add-btn:hover { background: var(–eu-blue-dark); }
+
+@media (max-width: 700px) {
+.grid, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+.toolbar h1 { font-size: 14px; flex-basis: 100%; }
+.doc { width: 100%; padding: 10mm; }
+}
+</style>
+
+</head>
+<body>
+
+<!-- =====================================================================
+     TOOLBAR
+===================================================================== -->
+
+<div class="toolbar">
+  <h1>Europass · Acuerdo de aprendizaje <span class="sub">Herramienta de edición e impresión</span></h1>
+  <button class="btn" onclick="exportJSON()">📥 Exportar JSON</button>
+  <span class="btn btn-file">
+    📂 Importar JSON
+    <input type="file" accept="application/json,.json" onchange="importJSON(event)">
+  </span>
+  <button class="btn secondary" onclick="resetForm()">🗑️ Limpiar</button>
+  <button class="btn" onclick="goPrint()">🖨️ Imprimir / PDF</button>
+</div>
+
+<div class="tabs">
+  <div class="tab active" id="tab-editor" onclick="switchView('editor')">📝 Formulario</div>
+  <div class="tab" id="tab-preview" onclick="switchView('preview')">📄 Vista del documento</div>
+</div>
+
+<!-- =====================================================================
+     EDITOR
+===================================================================== -->
+
+<div class="editor" id="editor">
+
+  <div class="notice">
+    <strong>Instrucciones:</strong> rellene los campos del formulario en español.
+    Use «Exportar JSON» para guardar y enviar los datos por correo. Quien reciba el archivo puede usar «Importar JSON»,
+    añadir el logotipo y generar el PDF mediante «Imprimir / PDF».
+  </div>
+
+  <!-- Cabecera & Logo -->
+
+  <div class="section">
+    <h2>Cabecera del documento</h2>
+    <div class="body">
+      <div class="grid">
+        <div>
+          <label>Número de Movilidad Europass</label>
+          <input type="text" id="numero_movilidad" placeholder="p. ej. ES-2025-001">
+        </div>
+        <div>
+          <label>Tipo de documento</label>
+          <select id="tipo_documento">
+            <option value="Acuerdo de aprendizaje">Acuerdo de aprendizaje (pre-movilidad)</option>
+            <option value="Certificado de resultados de aprendizaje">Certificado de resultados de aprendizaje (post-movilidad)</option>
+          </select>
+        </div>
+        <div class="full">
+          <label>Logotipo (PNG/JPG/SVG)</label>
+          <span class="btn btn-file" style="background: var(--eu-blue); color: #fff; border-color: var(--eu-blue);">
+            Seleccionar archivo de logotipo
+            <input type="file" accept="image/*" onchange="loadLogo(event)">
+          </span>
+          <button class="btn secondary" style="background: transparent; color: var(--eu-blue); border-color: var(--eu-blue); margin-left: 8px;" onclick="removeLogo()">Quitar logotipo</button>
+          <div class="logo-preview" id="logo-preview-box">
+            <span class="empty">Aún no se ha cargado ningún logotipo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Datos del participante / actividad -->
+
+  <div class="section">
+    <h2>Datos del participante y de la actividad</h2>
+    <div class="body">
+      <div class="grid">
+        <div>
+          <label>Nombre</label>
+          <input type="text" id="p_nombre">
+        </div>
+        <div>
+          <label>Apellidos</label>
+          <input type="text" id="p_apellidos">
+        </div>
+        <div class="full">
+          <label>Programa y tipo de actividad / Título</label>
+          <input type="text" id="actividad_titulo" placeholder="p. ej. Erasmus+ KA121-SCH – Job Shadowing">
+        </div>
+        <div>
+          <label>Fecha de inicio</label>
+          <input type="date" id="fecha_inicio">
+        </div>
+        <div>
+          <label>Fecha de fin</label>
+          <input type="date" id="fecha_fin">
+        </div>
+        <div class="full">
+          <label>Programa de aprendizaje en el que está inscrito o puesto que ocupa en la organización de envío</label>
+          <textarea id="programa_envio"></textarea>
+        </div>
+      </div>
+
+```
+  <div class="subgroup">
+    <h3>Organización de acogida</h3>
+    <div class="grid">
+      <div>
+        <label>Organización de acogida</label>
+        <input type="text" id="acogida_nombre">
+      </div>
+      <div>
+        <label>Ciudad y país de acogida</label>
+        <input type="text" id="acogida_lugar">
+      </div>
+      <div>
+        <label>Correo electrónico</label>
+        <input type="email" id="acogida_email">
+      </div>
+      <div>
+        <label>Teléfono</label>
+        <input type="tel" id="acogida_tel">
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <label>Ámbito</label>
+      <select id="ambito">
+        <option value="">Seleccione un elemento</option>
+        <option>Educación escolar</option>
+        <option>Educación superior</option>
+        <option>Educación de personas adultas</option>
+        <option>Formación profesional</option>
+        <option>Juventud</option>
+        <option>Deporte</option>
+      </select>
+    </div>
+    <div>
+      <label>Tipo</label>
+      <select id="tipo">
+        <option value="">Seleccione un elemento</option>
+        <option>Movilidad de alumnado</option>
+        <option>Movilidad de personal</option>
+        <option>Job shadowing</option>
+        <option>Curso estructurado</option>
+        <option>Período de prácticas</option>
+        <option>Estudios</option>
+        <option>Voluntariado</option>
+      </select>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- Resultados de aprendizaje -->
+
+  <div class="section">
+    <h2>Resultados de aprendizaje</h2>
+    <div class="body">
+      <p class="hint">Es obligatorio seleccionar A, B o C, o una combinación de ellas. Marque las opciones que se aplican y rellene los campos correspondientes.</p>
+
+```
+  <div class="checkbox-row">
+    <label><input type="checkbox" id="opt_A" onchange="toggleOption('A')"> Opción A – Marco europeo de competencias clave</label>
+    <label><input type="checkbox" id="opt_B" onchange="toggleOption('B')"> Opción B – ESCO</label>
+    <label><input type="checkbox" id="opt_C" onchange="toggleOption('C')"> Opción C – Otro marco</label>
+  </div>
+
+  <!-- Opción A -->
+  <div class="subgroup" id="block_A" style="display:none;">
+    <h3>Opción A – Competencias clave</h3>
+    <p class="hint">Rellene solo las competencias relevantes. Las vacías no aparecerán en el documento impreso.</p>
+    <div id="competenciasA"></div>
+  </div>
+
+  <!-- Opción B -->
+  <div class="subgroup" id="block_B" style="display:none;">
+    <h3>Opción B – ESCO</h3>
+    <div id="esco_list"></div>
+    <button type="button" class="add-btn" onclick="addLO('esco_list','ESCO')">+ Añadir resultado de aprendizaje</button>
+  </div>
+
+  <!-- Opción C -->
+  <div class="subgroup" id="block_C" style="display:none;">
+    <h3>Opción C – Otro marco de competencia</h3>
+    <div>
+      <label>Nombre del marco (opcional)</label>
+      <input type="text" id="marco_C" placeholder="p. ej. Marco interno del centro">
+    </div>
+    <div id="otro_list" style="margin-top: 10px;"></div>
+    <button type="button" class="add-btn" onclick="addLO('otro_list','Otro')">+ Añadir resultado de aprendizaje</button>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- Cursos / Tesis / Certificado -->
+
+  <div class="section">
+    <h2>Registro de los cursos seguidos</h2>
+    <div class="body">
+      <p class="hint">Sección opcional, antes y después de la movilidad.</p>
+      <div id="cursos_list"></div>
+      <button type="button" class="add-btn" onclick="addCurso()">+ Añadir curso</button>
+
+```
+  <div class="grid" style="margin-top: 16px;">
+    <div class="full">
+      <label>Tesis / Tesina / Informe / Ensayo</label>
+      <textarea id="tesis"></textarea>
+    </div>
+    <div class="full">
+      <label>Certificado / Diploma o grado conseguido (incluya niveles EQF / MECU)</label>
+      <textarea id="certificado"></textarea>
+    </div>
+    <div class="full">
+      <label>Descripción del sistema de calificación / sistema de créditos aplicado</label>
+      <textarea id="sistema_calif"></textarea>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- Actividades y tareas -->
+
+  <div class="section">
+    <h2>Actividades y tareas</h2>
+    <div class="body">
+      <div id="actividades_list"></div>
+      <button type="button" class="add-btn" onclick="addActividad()">+ Añadir actividad / tarea</button>
+    </div>
+  </div>
+
+  <!-- Seguimiento y tutoría -->
+
+  <div class="section">
+    <h2>Disposiciones de seguimiento y tutoría</h2>
+    <div class="body">
+      <p class="hint">Obligatorio antes de la movilidad.</p>
+      <div id="seguimiento_list"></div>
+      <button type="button" class="add-btn" onclick="addSeguimiento()">+ Añadir actividad de seguimiento</button>
+    </div>
+  </div>
+
+  <!-- Evaluación, reconocimiento, reincorporación -->
+
+  <div class="section">
+    <h2>Evaluación, reconocimiento y reincorporación</h2>
+    <div class="body">
+      <div class="subgroup">
+        <h3>Evaluación de los resultados de aprendizaje</h3>
+        <label>Formato y procedimientos de la evaluación</label>
+        <textarea id="eval_formato"></textarea>
+        <label style="margin-top: 8px;">Criterios de evaluación</label>
+        <textarea id="eval_criterios"></textarea>
+      </div>
+      <div class="subgroup">
+        <h3>Reconocimiento de los resultados de aprendizaje</h3>
+        <textarea id="reconocimiento"></textarea>
+      </div>
+      <div class="subgroup">
+        <h3>Reincorporación a la organización de envío</h3>
+        <label>Lugar de reincorporación</label>
+        <textarea id="lugar_reincorp"></textarea>
+        <label style="margin-top: 8px;">Condiciones de reincorporación</label>
+        <textarea id="cond_reincorp"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Disposiciones adicionales -->
+
+  <div class="section">
+    <h2>Disposiciones adicionales</h2>
+    <div class="body">
+      <p class="hint">Sección opcional para antes de la movilidad. No se permite después.</p>
+      <textarea id="disposiciones" style="min-height: 100px;"></textarea>
+    </div>
+  </div>
+
+  <!-- Información de contacto -->
+
+  <div class="section">
+    <h2>Información de contacto</h2>
+    <div class="body">
+
+```
+  <div class="subgroup">
+    <h3>Participante</h3>
+    <div class="grid-3 grid">
+      <div><label>Nombre y apellidos</label><input type="text" id="c_p_nombre"></div>
+      <div><label>Correo electrónico</label><input type="email" id="c_p_email"></div>
+      <div><label>Teléfono</label><input type="tel" id="c_p_tel"></div>
+    </div>
+  </div>
+
+  <div class="subgroup">
+    <h3>Padres / Tutores legales</h3>
+    <h4 style="font-size:12px; margin: 10px 0 6px; color: var(--muted);">Padre / madre / tutor/a legal 1</h4>
+    <div class="grid-3 grid">
+      <div><label>Nombre y apellidos</label><input type="text" id="c_t1_nombre"></div>
+      <div><label>Correo electrónico</label><input type="email" id="c_t1_email"></div>
+      <div><label>Teléfono</label><input type="tel" id="c_t1_tel"></div>
+    </div>
+    <h4 style="font-size:12px; margin: 14px 0 6px; color: var(--muted);">Padre / madre / tutor/a legal 2</h4>
+    <div class="grid-3 grid">
+      <div><label>Nombre y apellidos</label><input type="text" id="c_t2_nombre"></div>
+      <div><label>Correo electrónico</label><input type="email" id="c_t2_email"></div>
+      <div><label>Teléfono</label><input type="tel" id="c_t2_tel"></div>
+    </div>
+  </div>
+
+  <div class="subgroup">
+    <h3>Personas responsables en la organización de envío</h3>
+    <h4 style="font-size:12px; margin: 10px 0 6px; color: var(--muted);">Tutor/a</h4>
+    <div class="grid-4 grid">
+      <div><label>Nombre</label><input type="text" id="env_tutor_nombre"></div>
+      <div><label>Cargo</label><input type="text" id="env_tutor_cargo"></div>
+      <div><label>Email</label><input type="email" id="env_tutor_email"></div>
+      <div><label>Teléfono</label><input type="tel" id="env_tutor_tel"></div>
+    </div>
+    <h4 style="font-size:12px; margin: 10px 0 6px; color: var(--muted);">Contacto administrativo</h4>
+    <div class="grid-4 grid">
+      <div><label>Nombre</label><input type="text" id="env_admin_nombre"></div>
+      <div><label>Cargo</label><input type="text" id="env_admin_cargo"></div>
+      <div><label>Email</label><input type="email" id="env_admin_email"></div>
+      <div><label>Teléfono</label><input type="tel" id="env_admin_tel"></div>
+    </div>
+    <h4 style="font-size:12px; margin: 10px 0 6px; color: var(--muted);">Contacto de emergencia</h4>
+    <div class="grid-4 grid">
+      <div><label>Nombre</label><input type="text" id="env_emerg_nombre"></div>
+      <div><label>Cargo</label><input type="text" id="env_emerg_cargo"></div>
+      <div><label>Email</label><input type="email" id="env_emerg_email"></div>
+      <div><label>Teléfono</label><input type="tel" id="env_emerg_tel"></div>
+    </div>
+  </div>
+
+  <div class="subgroup">
+    <h3>Personas responsables en la organización de acogida</h3>
+    <h4 style="font-size:12px; margin: 10px 0 6px; color: var(--muted);">Tutor/a</h4>
+    <div class="grid-4 grid">
+      <div><label>Nombre</label><input type="text" id="acg_tutor_nombre"></div>
+      <div><label>Cargo</label><input type="text" id="acg_tutor_cargo"></div>
+      <div><label>Email</label><input type="email" id="acg_tutor_email"></div>
+      <div><label>Teléfono</label><input type="tel" id="acg_tutor_tel"></div>
+    </div>
+    <h4 style="font-size:12px; margin: 10px 0 6px; color: var(--muted);">Contacto administrativo</h4>
+    <div class="grid-4 grid">
+      <div><label>Nombre</label><input type="text" id="acg_admin_nombre"></div>
+      <div><label>Cargo</label><input type="text" id="acg_admin_cargo"></div>
+      <div><label>Email</label><input type="email" id="acg_admin_email"></div>
+      <div><label>Teléfono</label><input type="tel" id="acg_admin_tel"></div>
+    </div>
+    <h4 style="font-size:12px; margin: 10px 0 6px; color: var(--muted);">Contacto de emergencia</h4>
+    <div class="grid-4 grid">
+      <div><label>Nombre</label><input type="text" id="acg_emerg_nombre"></div>
+      <div><label>Cargo</label><input type="text" id="acg_emerg_cargo"></div>
+      <div><label>Email</label><input type="email" id="acg_emerg_email"></div>
+      <div><label>Teléfono</label><input type="tel" id="acg_emerg_tel"></div>
+    </div>
+  </div>
+
+  <div class="subgroup">
+    <h3>Acompañantes</h3>
+    <div id="acomp_list"></div>
+    <button type="button" class="add-btn" onclick="addAcompanante()">+ Añadir acompañante</button>
+  </div>
+
+</div>
+```
+
+  </div>
+
+  <!-- Firmas -->
+
+  <div class="section">
+    <h2>Firmas</h2>
+    <div class="body">
+      <p class="hint">Estos datos aparecerán en la página de firmas. Las firmas manuscritas se añaden tras imprimir el documento.</p>
+
+```
+  <div class="subgroup">
+    <h3>Organización de envío</h3>
+    <div class="grid">
+      <div><label>Nombre de la organización</label><input type="text" id="firma_env_org"></div>
+      <div><label>Dirección</label><input type="text" id="firma_env_dir"></div>
+      <div><label>Persona responsable</label><input type="text" id="firma_env_resp"></div>
+      <div><label>Fecha</label><input type="date" id="firma_env_fecha"></div>
+    </div>
+  </div>
+
+  <div class="subgroup">
+    <h3>Organización de acogida</h3>
+    <div class="grid">
+      <div><label>Nombre de la organización</label><input type="text" id="firma_acg_org"></div>
+      <div><label>Dirección</label><input type="text" id="firma_acg_dir"></div>
+      <div><label>Persona responsable</label><input type="text" id="firma_acg_resp"></div>
+      <div><label>Fecha</label><input type="date" id="firma_acg_fecha"></div>
+    </div>
+  </div>
+
+  <div class="subgroup">
+    <h3>Participante</h3>
+    <div class="grid">
+      <div><label>Nombre y apellidos</label><input type="text" id="firma_part_nombre"></div>
+      <div><label>Fecha</label><input type="date" id="firma_part_fecha"></div>
+    </div>
+  </div>
+
+  <div class="subgroup">
+    <h3>Padre / madre / tutor/a legal</h3>
+    <div class="grid">
+      <div><label>Nombre y apellidos</label><input type="text" id="firma_tutor_nombre"></div>
+      <div><label>Fecha</label><input type="date" id="firma_tutor_fecha"></div>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+
+</div>
+
+<!-- =====================================================================
+     VORSCHAU
+===================================================================== -->
+
+<div id="preview">
+  <div class="print-hint">
+    💡 Use el botón «Imprimir / PDF» o pulse <strong>Ctrl/Cmd + P</strong>. En el diálogo de impresión seleccione «Guardar como PDF» y desactive cabeceras y pies de página del navegador para un resultado limpio.
+  </div>
+  <div id="doc-output"></div>
+</div>
+
+<!-- =====================================================================
+     SCRIPT
+===================================================================== -->
+
+<script>
+/* ---------------------------------------------------------------------
+   ESTRUCTURA DE DATOS
+--------------------------------------------------------------------- */
+const FIELDS = [
+  'numero_movilidad','tipo_documento',
+  'p_nombre','p_apellidos','actividad_titulo','fecha_inicio','fecha_fin',
+  'programa_envio',
+  'acogida_nombre','acogida_lugar','acogida_email','acogida_tel',
+  'ambito','tipo',
+  'marco_C',
+  'tesis','certificado','sistema_calif',
+  'eval_formato','eval_criterios','reconocimiento','lugar_reincorp','cond_reincorp',
+  'disposiciones',
+  'c_p_nombre','c_p_email','c_p_tel',
+  'c_t1_nombre','c_t1_email','c_t1_tel',
+  'c_t2_nombre','c_t2_email','c_t2_tel',
+  'env_tutor_nombre','env_tutor_cargo','env_tutor_email','env_tutor_tel',
+  'env_admin_nombre','env_admin_cargo','env_admin_email','env_admin_tel',
+  'env_emerg_nombre','env_emerg_cargo','env_emerg_email','env_emerg_tel',
+  'acg_tutor_nombre','acg_tutor_cargo','acg_tutor_email','acg_tutor_tel',
+  'acg_admin_nombre','acg_admin_cargo','acg_admin_email','acg_admin_tel',
+  'acg_emerg_nombre','acg_emerg_cargo','acg_emerg_email','acg_emerg_tel',
+  'firma_env_org','firma_env_dir','firma_env_resp','firma_env_fecha',
+  'firma_acg_org','firma_acg_dir','firma_acg_resp','firma_acg_fecha',
+  'firma_part_nombre','firma_part_fecha',
+  'firma_tutor_nombre','firma_tutor_fecha'
+];
+
+const COMPETENCIAS_A = [
+  { id: 'c_lectura', label: 'Competencia en lectura y escritura' },
+  { id: 'c_multilingue', label: 'Competencia multilingüe' },
+  { id: 'c_matematica', label: 'Competencia matemática y competencia en ciencia e ingeniería' },
+  { id: 'c_digital', label: 'Competencia digital' },
+  { id: 'c_personales', label: 'Competencias interpersonales y habilidad para adquirir nuevas competencias' },
+  { id: 'c_ciudadania', label: 'Competencia en ciudadanía activa' },
+  { id: 'c_emprendedora', label: 'Competencia emprendedora' },
+  { id: 'c_cultural', label: 'Competencia en conciencia y expresión culturales' }
+];
+
+let logoDataUrl = '';
+
+/* ---------------------------------------------------------------------
+   DYNAMISCHE BLÖCKE INITIALISIEREN
+--------------------------------------------------------------------- */
+function initCompetenciasA() {
+  const cont = document.getElementById('competenciasA');
+  cont.innerHTML = COMPETENCIAS_A.map(c => `
+    <div style="margin-bottom: 10px;">
+      <label>${c.label}</label>
+      <textarea id="${c.id}" placeholder="Describa la competencia o deje en blanco si no es relevante"></textarea>
+
+```
+</div>
+```
+
+`).join(’’);
+}
+
+function toggleOption(opt) {
+document.getElementById(‘block_’ + opt).style.display =
+document.getElementById(‘opt_’ + opt).checked ? ‘block’ : ‘none’;
+}
+
+/* Repeater: Lernergebnisse (B / C) */
+let loCounter = { ESCO: 0, Otro: 0 };
+function addLO(containerId, kind, data) {
+loCounter[kind]++;
+const idx = loCounter[kind];
+const cont = document.getElementById(containerId);
+const div = document.createElement(‘div’);
+div.className = ‘repeater-item’;
+div.dataset.kind = kind;
+div.innerHTML = `<button type="button" class="remove-btn" onclick="this.parentElement.remove()" title="Eliminar">×</button> <h4>Resultado de aprendizaje ${idx}</h4> <label>Título</label> <input type="text" class="lo-titulo" value="${esc(data?.titulo)}"> <label style="margin-top: 8px;">Descripción / Habilidades / Conceptos</label> <textarea class="lo-desc">${esc(data?.descripcion)}</textarea>`;
+cont.appendChild(div);
+}
+
+/* Repeater: Cursos */
+function addCurso(data) {
+const cont = document.getElementById(‘cursos_list’);
+const div = document.createElement(‘div’);
+div.className = ‘repeater-item’;
+div.innerHTML = `<button type="button" class="remove-btn" onclick="this.parentElement.remove()">×</button> <h4>Curso</h4> <div class="grid"> <div class="full"><label>Título del curso (incluya código si está disponible)</label><input type="text" class="cur-titulo" value="${esc(data?.titulo)}"></div> <div><label>Duración</label><input type="text" class="cur-duracion" value="${esc(data?.duracion)}"></div> <div><label>Calificación obtenida</label><input type="text" class="cur-calif" value="${esc(data?.calificacion)}"></div> <div><label>Equivalencia (sistema nacional)</label><input type="text" class="cur-equiv" value="${esc(data?.equivalencia)}"></div> <div><label>Equivalencia en créditos (nacional)</label><input type="text" class="cur-creditos" value="${esc(data?.creditos)}"></div> </div>`;
+cont.appendChild(div);
+}
+
+/* Repeater: Actividades */
+function addActividad(data) {
+const cont = document.getElementById(‘actividades_list’);
+const idx = cont.querySelectorAll(’.repeater-item’).length + 1;
+const div = document.createElement(‘div’);
+div.className = ‘repeater-item’;
+div.innerHTML = `<button type="button" class="remove-btn" onclick="this.parentElement.remove()">×</button> <h4>Actividad / Tarea ${idx}</h4> <label>Título</label> <input type="text" class="act-titulo" value="${esc(data?.titulo)}"> <label style="margin-top: 8px;">Descripción</label> <textarea class="act-desc">${esc(data?.descripcion)}</textarea>`;
+cont.appendChild(div);
+}
+
+/* Repeater: Seguimiento */
+function addSeguimiento(data) {
+const cont = document.getElementById(‘seguimiento_list’);
+const idx = cont.querySelectorAll(’.repeater-item’).length + 1;
+const div = document.createElement(‘div’);
+div.className = ‘repeater-item’;
+div.innerHTML = `<button type="button" class="remove-btn" onclick="this.parentElement.remove()">×</button> <h4>Actividad de seguimiento y tutoría ${idx}</h4> <label>Título</label> <input type="text" class="seg-titulo" value="${esc(data?.titulo)}"> <label style="margin-top: 8px;">Descripción (incluya plazos y frecuencia)</label> <textarea class="seg-desc">${esc(data?.descripcion)}</textarea>`;
+cont.appendChild(div);
+}
+
+/* Repeater: Acompañantes */
+function addAcompanante(data) {
+const cont = document.getElementById(‘acomp_list’);
+const idx = cont.querySelectorAll(’.repeater-item’).length + 1;
+const div = document.createElement(‘div’);
+div.className = ‘repeater-item’;
+div.innerHTML = `<button type="button" class="remove-btn" onclick="this.parentElement.remove()">×</button> <h4>Acompañante ${idx}</h4> <div class="grid"> <div><label>Nombre</label><input type="text" class="ac-nombre" value="${esc(data?.nombre)}"></div> <div><label>Cargo</label><input type="text" class="ac-cargo" value="${esc(data?.cargo)}"></div> <div><label>Correo electrónico</label><input type="email" class="ac-email" value="${esc(data?.email)}"></div> <div><label>Teléfono</label><input type="tel" class="ac-tel" value="${esc(data?.tel)}"></div> <div><label>Periodo desde</label><input type="date" class="ac-desde" value="${esc(data?.desde)}"></div> <div><label>Periodo hasta</label><input type="date" class="ac-hasta" value="${esc(data?.hasta)}"></div> </div>`;
+cont.appendChild(div);
+}
+
+function esc(v) { return v == null ? ‘’ : String(v).replace(/”/g, ‘"’); }
+
+/* ———————————————————————
+LOGO
+——————————————————————— */
+function loadLogo(ev) {
+const file = ev.target.files[0];
+if (!file) return;
+const reader = new FileReader();
+reader.onload = e => {
+logoDataUrl = e.target.result;
+renderLogoPreview();
+};
+reader.readAsDataURL(file);
+}
+function removeLogo() {
+logoDataUrl = ‘’;
+renderLogoPreview();
+}
+function renderLogoPreview() {
+const box = document.getElementById(‘logo-preview-box’);
+if (logoDataUrl) {
+box.innerHTML = `<img src="${logoDataUrl}" alt="Logotipo"><span style="color: var(--muted); font-size: 12px;">Logotipo cargado</span>`;
+} else {
+box.innerHTML = `<span class="empty">Aún no se ha cargado ningún logotipo</span>`;
+}
+}
+
+/* ———————————————————————
+COLLECT / FILL
+——————————————————————— */
+function collect() {
+const data = {};
+FIELDS.forEach(f => {
+const el = document.getElementById(f);
+data[f] = el ? el.value : ‘’;
+});
+data.opt_A = document.getElementById(‘opt_A’).checked;
+data.opt_B = document.getElementById(‘opt_B’).checked;
+data.opt_C = document.getElementById(‘opt_C’).checked;
+
+// Competencias A
+data.competenciasA = {};
+COMPETENCIAS_A.forEach(c => {
+data.competenciasA[c.id] = document.getElementById(c.id)?.value || ‘’;
+});
+
+// ESCO
+data.esco = […document.querySelectorAll(’#esco_list .repeater-item’)].map(it => ({
+titulo: it.querySelector(’.lo-titulo’).value,
+descripcion: it.querySelector(’.lo-desc’).value
+}));
+// Otro
+data.otro = […document.querySelectorAll(’#otro_list .repeater-item’)].map(it => ({
+titulo: it.querySelector(’.lo-titulo’).value,
+descripcion: it.querySelector(’.lo-desc’).value
+}));
+// Cursos
+data.cursos = […document.querySelectorAll(’#cursos_list .repeater-item’)].map(it => ({
+titulo: it.querySelector(’.cur-titulo’).value,
+duracion: it.querySelector(’.cur-duracion’).value,
+calificacion: it.querySelector(’.cur-calif’).value,
+equivalencia: it.querySelector(’.cur-equiv’).value,
+creditos: it.querySelector(’.cur-creditos’).value
+}));
+// Actividades
+data.actividades = […document.querySelectorAll(’#actividades_list .repeater-item’)].map(it => ({
+titulo: it.querySelector(’.act-titulo’).value,
+descripcion: it.querySelector(’.act-desc’).value
+}));
+// Seguimiento
+data.seguimiento = […document.querySelectorAll(’#seguimiento_list .repeater-item’)].map(it => ({
+titulo: it.querySelector(’.seg-titulo’).value,
+descripcion: it.querySelector(’.seg-desc’).value
+}));
+// Acompañantes
+data.acompanantes = […document.querySelectorAll(’#acomp_list .repeater-item’)].map(it => ({
+nombre: it.querySelector(’.ac-nombre’).value,
+cargo: it.querySelector(’.ac-cargo’).value,
+email: it.querySelector(’.ac-email’).value,
+tel: it.querySelector(’.ac-tel’).value,
+desde: it.querySelector(’.ac-desde’).value,
+hasta: it.querySelector(’.ac-hasta’).value
+}));
+data.logo = logoDataUrl;
+data._meta = { schema: ‘europass-acuerdo-aprendizaje’, version: 1, generated: new Date().toISOString() };
+return data;
+}
+
+function fill(data) {
+if (!data) return;
+FIELDS.forEach(f => {
+const el = document.getElementById(f);
+if (el && data[f] !== undefined) el.value = data[f];
+});
+document.getElementById(‘opt_A’).checked = !!data.opt_A;
+document.getElementById(‘opt_B’).checked = !!data.opt_B;
+document.getElementById(‘opt_C’).checked = !!data.opt_C;
+toggleOption(‘A’); toggleOption(‘B’); toggleOption(‘C’);
+
+// Competencias A
+if (data.competenciasA) {
+COMPETENCIAS_A.forEach(c => {
+const el = document.getElementById(c.id);
+if (el) el.value = data.competenciasA[c.id] || ‘’;
+});
+}
+// Listen leeren
+[‘esco_list’,‘otro_list’,‘cursos_list’,‘actividades_list’,‘seguimiento_list’,‘acomp_list’]
+.forEach(id => document.getElementById(id).innerHTML = ‘’);
+loCounter = { ESCO: 0, Otro: 0 };
+
+(data.esco || []).forEach(d => addLO(‘esco_list’,‘ESCO’, d));
+(data.otro || []).forEach(d => addLO(‘otro_list’,‘Otro’, d));
+(data.cursos || []).forEach(d => addCurso(d));
+(data.actividades || []).forEach(d => addActividad(d));
+(data.seguimiento || []).forEach(d => addSeguimiento(d));
+(data.acompanantes || []).forEach(d => addAcompanante(d));
+
+if (data.logo) { logoDataUrl = data.logo; renderLogoPreview(); }
+}
+
+/* ———————————————————————
+IMPORT / EXPORT JSON
+——————————————————————— */
+function exportJSON() {
+const data = collect();
+const fname = `europass_${(data.p_apellidos || 'documento').replace(/[^a-z0-9_-]/gi,'_')}_${new Date().toISOString().slice(0,10)}.json`;
+const blob = new Blob([JSON.stringify(data, null, 2)], { type: ‘application/json’ });
+const url = URL.createObjectURL(blob);
+const a = document.createElement(‘a’);
+a.href = url; a.download = fname;
+document.body.appendChild(a); a.click(); a.remove();
+URL.revokeObjectURL(url);
+}
+
+function importJSON(ev) {
+const file = ev.target.files[0];
+if (!file) return;
+const reader = new FileReader();
+reader.onload = e => {
+try {
+const data = JSON.parse(e.target.result);
+fill(data);
+alert(‘Datos importados correctamente.’);
+} catch (err) {
+alert(’Error al leer el archivo JSON: ’ + err.message);
+}
+};
+reader.readAsText(file);
+ev.target.value = ‘’;
+}
+
+function resetForm() {
+if (!confirm(’¿Seguro que desea limpiar todos los campos?’)) return;
+FIELDS.forEach(f => { const el = document.getElementById(f); if (el) el.value = ‘’; });
+[‘opt_A’,‘opt_B’,‘opt_C’].forEach(id => document.getElementById(id).checked = false);
+[‘A’,‘B’,‘C’].forEach(toggleOption);
+COMPETENCIAS_A.forEach(c => { const el = document.getElementById(c.id); if (el) el.value=’’; });
+[‘esco_list’,‘otro_list’,‘cursos_list’,‘actividades_list’,‘seguimiento_list’,‘acomp_list’]
+.forEach(id => document.getElementById(id).innerHTML = ‘’);
+removeLogo();
+}
+
+/* ———————————————————————
+VIEW SWITCH + RENDER
+——————————————————————— */
+function switchView(view) {
+const editor = document.getElementById(‘editor’);
+const preview = document.getElementById(‘preview’);
+const tEd = document.getElementById(‘tab-editor’);
+const tPv = document.getElementById(‘tab-preview’);
+
+if (view === ‘preview’) {
+renderDoc();
+editor.classList.add(‘hidden’);
+preview.classList.add(‘active’);
+tEd.classList.remove(‘active’); tPv.classList.add(‘active’);
+window.scrollTo(0, 0);
+} else {
+editor.classList.remove(‘hidden’);
+preview.classList.remove(‘active’);
+tPv.classList.remove(‘active’); tEd.classList.add(‘active’);
+}
+}
+
+function goPrint() {
+renderDoc();
+document.getElementById(‘editor’).classList.add(‘hidden’);
+document.getElementById(‘preview’).classList.add(‘active’);
+document.getElementById(‘tab-editor’).classList.remove(‘active’);
+document.getElementById(‘tab-preview’).classList.add(‘active’);
+setTimeout(() => window.print(), 200);
+}
+
+function v(value, emptyMsg) {
+if (!value || !String(value).trim()) {
+return `<span class="value-line empty">${emptyMsg || '—'}</span>`;
+}
+return `<div class="value-line">${escapeHTML(value)}</div>`;
+}
+function escapeHTML(s) {
+return String(s).replace(/[&<>]/g, m => ({’&’:’&’,’<’:’<’,’>’:’>’}[m]));
+}
+function fmtDate(s) {
+if (!s) return ‘’;
+const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+return m ? `${m[3]}/${m[2]}/${m[1]}` : s;
+}
+
+function renderDoc() {
+const d = collect();
+const out = document.getElementById(‘doc-output’);
+
+const fullName = [d.p_nombre, d.p_apellidos].filter(Boolean).join(’ ’) || ‘[Nombre y Apellidos]’;
+const periodo = (d.fecha_inicio || d.fecha_fin)
+? `${fmtDate(d.fecha_inicio) || 'DD/MM/AAAA'} – ${fmtDate(d.fecha_fin) || 'DD/MM/AAAA'}`
+: ‘DD/MM/AAAA – DD/MM/AAAA’;
+
+// ––––– PÁGINA 1 –––––
+let html = `
+
+<div class="doc">
+  <div class="doc-header">
+    <div class="logo-box">
+      ${ d.logo ? `<img src="${d.logo}" alt="Logotipo">` : `<div class="placeholder">Logotipo</div>` }
+    </div>
+    <div class="title-block">
+      <div class="europass">Movilidad Europass</div>
+      <div class="subtitle">${escapeHTML(d.numero_movilidad || '[Número de Movilidad Europass]')} · ${escapeHTML(d.tipo_documento || 'Acuerdo de aprendizaje')}</div>
+    </div>
+  </div>
+
+  <div class="person-name">${escapeHTML(fullName)}</div>
+  <div class="person-meta">
+    <div><strong>${escapeHTML(d.actividad_titulo || '[Programa y tipo de actividad / Título]')}</strong></div>
+    <div>${escapeHTML(periodo)}</div>
+  </div>
+
+  <h2 class="section-title">Programa de aprendizaje / puesto en la organización de envío</h2>
+  ${v(d.programa_envio, 'Insertar texto')}
+
+  <h2 class="section-title">Organización de acogida</h2>
+  <table class="info">
+    <tr>
+      <th style="width: 40%;">Organización de acogida</th>
+      <th style="width: 30%;">Ciudad y país</th>
+      <th style="width: 30%;">Correo / Teléfono</th>
+    </tr>
+    <tr>
+      <td${d.acogida_nombre?'':' class="empty"'}>${escapeHTML(d.acogida_nombre) || 'Insertar texto'}</td>
+      <td${d.acogida_lugar?'':' class="empty"'}>${escapeHTML(d.acogida_lugar) || 'Insertar texto'}</td>
+      <td${(d.acogida_email||d.acogida_tel)?'':' class="empty"'}>${[d.acogida_email,d.acogida_tel].filter(Boolean).map(escapeHTML).join('<br>') || 'Insertar correo / teléfono'}</td>
+    </tr>
+    <tr>
+      <th>Ámbito</th>
+      <th>Tipo</th>
+      <th></th>
+    </tr>
+    <tr>
+      <td${d.ambito?'':' class="empty"'}>${escapeHTML(d.ambito) || 'Seleccione un elemento'}</td>
+      <td${d.tipo?'':' class="empty"'}>${escapeHTML(d.tipo) || 'Seleccione un elemento'}</td>
+      <td></td>
+    </tr>
+  </table>
+`;
+
+// Resultados de aprendizaje
+if (d.opt_A || d.opt_B || d.opt_C) {
+html += `<h2 class="section-title">Resultados de aprendizaje</h2>`;
+
+```
+if (d.opt_A) {
+  const filled = COMPETENCIAS_A.filter(c => (d.competenciasA[c.id] || '').trim());
+  html += `<div class="label-line">Opción A · Marco europeo de competencias clave</div>`;
+  if (filled.length) {
+    html += `<div class="competencies-grid">`;
+    filled.forEach(c => {
+      html += `<div class="competency"><div class="c-title">${escapeHTML(c.label)}</div><div class="c-desc">${escapeHTML(d.competenciasA[c.id])}</div></div>`;
+    });
+    html += `</div>`;
+  } else {
+    html += v('', 'Sin competencias rellenadas');
+  }
+}
+if (d.opt_B) {
+  html += `<div class="label-line" style="margin-top:10px;">Opción B · ESCO</div>`;
+  if (d.esco.length) {
+    d.esco.forEach((lo, i) => {
+      html += `<div class="lo-block"><div class="lo-title">Resultado de aprendizaje ${i+1}: ${escapeHTML(lo.titulo) || '[Título]'}</div><div class="lo-desc">${escapeHTML(lo.descripcion) || ''}</div></div>`;
+    });
+  } else { html += v('', 'Sin resultados ESCO'); }
+}
+if (d.opt_C) {
+  const marcoLabel = d.marco_C ? `Opción C · ${escapeHTML(d.marco_C)}` : `Opción C · Otro marco de competencia`;
+  html += `<div class="label-line" style="margin-top:10px;">${marcoLabel}</div>`;
+  if (d.otro.length) {
+    d.otro.forEach((lo, i) => {
+      html += `<div class="lo-block"><div class="lo-title">Resultado de aprendizaje ${i+1}: ${escapeHTML(lo.titulo) || '[Título]'}</div><div class="lo-desc">${escapeHTML(lo.descripcion) || ''}</div></div>`;
+    });
+  } else { html += v('', 'Sin resultados rellenados'); }
+}
+```
+
+}
+
+html += `</div>`; // /doc page 1
+
+// ––––– PÁGINA 2 –––––
+html += `<div class="doc"> <h2 class="section-title">Registro de los cursos seguidos</h2>`;
+if (d.cursos.length) {
+html += `<table class="info"> <tr> <th>Título del curso</th> <th style="width:14%;">Duración</th> <th style="width:14%;">Calificación</th> <th style="width:18%;">Equiv. nacional</th> <th style="width:14%;">Créditos nac.</th> </tr>`;
+d.cursos.forEach(c => {
+html += `<tr> <td${c.titulo?'':' class="empty"'}>${escapeHTML(c.titulo) || '—'}</td> <td${c.duracion?'':' class="empty"'}>${escapeHTML(c.duracion) || '—'}</td> <td${c.calificacion?'':' class="empty"'}>${escapeHTML(c.calificacion) || '—'}</td> <td${c.equivalencia?'':' class="empty"'}>${escapeHTML(c.equivalencia) || '—'}</td> <td${c.creditos?'':' class="empty"'}>${escapeHTML(c.creditos) || '—'}</td> </tr>`;
+});
+html += `</table>`;
+} else {
+html += v(’’, ‘Sin cursos registrados’);
+}
+
+if (d.tesis || d.certificado || d.sistema_calif) {
+if (d.tesis)        { html += `<div class="label-line">Tesis / Tesina / Informe / Ensayo</div>${v(d.tesis)}`; }
+if (d.certificado)  { html += `<div class="label-line">Certificado / Diploma o grado conseguido</div>${v(d.certificado)}`; }
+if (d.sistema_calif){ html += `<div class="label-line">Sistema de calificación / créditos</div>${v(d.sistema_calif)}`; }
+}
+
+// Actividades y tareas
+if (d.actividades.length) {
+html += `<h2 class="section-title">Actividades y tareas</h2>`;
+d.actividades.forEach((a,i) => {
+html += `<div class="lo-block"><div class="lo-title">Actividad / Tarea ${i+1}: ${escapeHTML(a.titulo) || '[Título]'}</div><div class="lo-desc">${escapeHTML(a.descripcion) || ''}</div></div>`;
+});
+}
+
+// Seguimiento
+if (d.seguimiento.length) {
+html += `<h2 class="section-title">Disposiciones de seguimiento y tutoría</h2>`;
+d.seguimiento.forEach((a,i) => {
+html += `<div class="lo-block"><div class="lo-title">Actividad de seguimiento ${i+1}: ${escapeHTML(a.titulo) || '[Título]'}</div><div class="lo-desc">${escapeHTML(a.descripcion) || ''}</div></div>`;
+});
+}
+
+// Evaluación, reconocimiento, reincorporación
+const hasEval = d.eval_formato || d.eval_criterios || d.reconocimiento || d.lugar_reincorp || d.cond_reincorp;
+if (hasEval) {
+html += `<h2 class="section-title">Evaluación, reconocimiento y reincorporación</h2>`;
+if (d.eval_formato || d.eval_criterios) {
+html += `<div class="label-line">Evaluación de los resultados de aprendizaje</div>`;
+if (d.eval_formato)   html += `<div class="label-line" style="text-transform:none; font-size:8.5pt;">Formato y procedimientos:</div>${v(d.eval_formato)}`;
+if (d.eval_criterios) html += `<div class="label-line" style="text-transform:none; font-size:8.5pt;">Criterios:</div>${v(d.eval_criterios)}`;
+}
+if (d.reconocimiento) {
+html += `<div class="label-line">Reconocimiento de los resultados de aprendizaje</div>${v(d.reconocimiento)}`;
+}
+if (d.lugar_reincorp || d.cond_reincorp) {
+html += `<div class="label-line">Reincorporación a la organización de envío</div>`;
+if (d.lugar_reincorp) html += `<div class="label-line" style="text-transform:none; font-size:8.5pt;">Lugar:</div>${v(d.lugar_reincorp)}`;
+if (d.cond_reincorp)  html += `<div class="label-line" style="text-transform:none; font-size:8.5pt;">Condiciones:</div>${v(d.cond_reincorp)}`;
+}
+}
+
+if (d.disposiciones) {
+html += `<h2 class="section-title">Disposiciones adicionales</h2>${v(d.disposiciones)}`;
+}
+
+html += `<div class="footer">
+<span>© Unión Europea, 2005-2023 · https://europa.eu/europass/</span>
+<span>Movilidad Europass</span>
+
+  </div>`;
+  html += `</div>`; // /doc page 2
+
+// ––––– PÁGINA 3 — Información de contacto –––––
+html += `<div class="doc"><h2 class="section-title">Información de contacto</h2>`;
+
+// Participante
+html += `<div class="label-line">Participante</div> <table class="info"> <tr><th>Nombre y apellidos</th><th>Correo electrónico</th><th>Teléfono</th></tr> <tr> <td${d.c_p_nombre?'':' class="empty"'}>${escapeHTML(d.c_p_nombre)||'—'}</td> <td${d.c_p_email?'':' class="empty"'}>${escapeHTML(d.c_p_email)||'—'}</td> <td${d.c_p_tel?'':' class="empty"'}>${escapeHTML(d.c_p_tel)||'—'}</td> </tr> </table>`;
+
+// Tutores legales
+if (d.c_t1_nombre || d.c_t1_email || d.c_t1_tel || d.c_t2_nombre || d.c_t2_email || d.c_t2_tel) {
+html += `<div class="label-line">Padres / Tutores legales</div> <table class="info"> <tr><th></th><th>Nombre y apellidos</th><th>Correo electrónico</th><th>Teléfono</th></tr> <tr> <th style="background:#f0f4fb;">Tutor/a 1</th> <td${d.c_t1_nombre?'':' class="empty"'}>${escapeHTML(d.c_t1_nombre)||'—'}</td> <td${d.c_t1_email?'':' class="empty"'}>${escapeHTML(d.c_t1_email)||'—'}</td> <td${d.c_t1_tel?'':' class="empty"'}>${escapeHTML(d.c_t1_tel)||'—'}</td> </tr> <tr> <th style="background:#f0f4fb;">Tutor/a 2</th> <td${d.c_t2_nombre?'':' class="empty"'}>${escapeHTML(d.c_t2_nombre)||'—'}</td> <td${d.c_t2_email?'':' class="empty"'}>${escapeHTML(d.c_t2_email)||'—'}</td> <td${d.c_t2_tel?'':' class="empty"'}>${escapeHTML(d.c_t2_tel)||'—'}</td> </tr> </table>`;
+}
+
+// Responsables envío
+html += contactBlock(‘Personas responsables en la organización de envío’, [
+[‘Tutor/a’, d.env_tutor_nombre, d.env_tutor_cargo, d.env_tutor_email, d.env_tutor_tel],
+[‘Contacto administrativo’, d.env_admin_nombre, d.env_admin_cargo, d.env_admin_email, d.env_admin_tel],
+[‘Contacto de emergencia’, d.env_emerg_nombre, d.env_emerg_cargo, d.env_emerg_email, d.env_emerg_tel]
+]);
+
+// Responsables acogida
+html += contactBlock(‘Personas responsables en la organización de acogida’, [
+[‘Tutor/a’, d.acg_tutor_nombre, d.acg_tutor_cargo, d.acg_tutor_email, d.acg_tutor_tel],
+[‘Contacto administrativo’, d.acg_admin_nombre, d.acg_admin_cargo, d.acg_admin_email, d.acg_admin_tel],
+[‘Contacto de emergencia’, d.acg_emerg_nombre, d.acg_emerg_cargo, d.acg_emerg_email, d.acg_emerg_tel]
+]);
+
+// Acompañantes
+if (d.acompanantes.length) {
+html += `<div class="label-line">Acompañantes</div> <table class="info"> <tr><th>Nombre</th><th>Cargo</th><th>Correo / Teléfono</th><th>Periodo</th></tr>`;
+d.acompanantes.forEach(a => {
+const periodo = (a.desde || a.hasta) ? `${fmtDate(a.desde)||'—'} → ${fmtDate(a.hasta)||'—'}` : ‘—’;
+html += `<tr> <td${a.nombre?'':' class="empty"'}>${escapeHTML(a.nombre)||'—'}</td> <td${a.cargo?'':' class="empty"'}>${escapeHTML(a.cargo)||'—'}</td> <td${(a.email||a.tel)?'':' class="empty"'}>${[a.email,a.tel].filter(Boolean).map(escapeHTML).join('<br>')||'—'}</td> <td>${escapeHTML(periodo)}</td> </tr>`;
+});
+html += `</table>`;
+}
+
+// ––––– FIRMAS –––––
+html += `<h2 class="section-title">Firmas</h2>
+<div class="signatures avoid-break">
+<div class="sig-box">
+<div class="sig-title">Organización de envío</div>
+<div class="sig-row"><strong>${escapeHTML(d.firma_env_org)||’—’}</strong></div>
+<div class="sig-row" style="font-size:8.5pt; color:#555;">${escapeHTML(d.firma_env_dir)||’’}</div>
+<div class="sig-row">Persona responsable: ${escapeHTML(d.firma_env_resp)||’—’}</div>
+<div class="sig-row">Fecha: ${fmtDate(d.firma_env_fecha)||’—’}</div>
+<div class="sig-line">Firma</div>
+</div>
+<div class="sig-box">
+<div class="sig-title">Organización de acogida</div>
+<div class="sig-row"><strong>${escapeHTML(d.firma_acg_org)||’—’}</strong></div>
+<div class="sig-row" style="font-size:8.5pt; color:#555;">${escapeHTML(d.firma_acg_dir)||’’}</div>
+<div class="sig-row">Persona responsable: ${escapeHTML(d.firma_acg_resp)||’—’}</div>
+<div class="sig-row">Fecha: ${fmtDate(d.firma_acg_fecha)||’—’}</div>
+<div class="sig-line">Firma</div>
+</div>
+<div class="sig-box">
+<div class="sig-title">Participante</div>
+<div class="sig-row">${escapeHTML(d.firma_part_nombre)||’—’}</div>
+<div class="sig-row">Fecha: ${fmtDate(d.firma_part_fecha)||’—’}</div>
+<div class="sig-line">Firma</div>
+</div>
+<div class="sig-box">
+<div class="sig-title">Padre / madre / tutor/a legal</div>
+<div class="sig-row">${escapeHTML(d.firma_tutor_nombre)||’—’}</div>
+<div class="sig-row">Fecha: ${fmtDate(d.firma_tutor_fecha)||’—’}</div>
+<div class="sig-line">Firma</div>
+</div>
+</div>
+
+```
+<div class="footer">
+  <span>© Unión Europea, 2005-2023 · https://europa.eu/europass/</span>
+  <span>Movilidad Europass</span>
+</div>
+```
+
+  </div>`;
+
+out.innerHTML = html;
+}
+
+function contactBlock(title, rows) {
+let html = `<div class="label-line">${escapeHTML(title)}</div> <table class="info"> <tr><th></th><th>Nombre</th><th>Cargo</th><th>Correo electrónico</th><th>Teléfono</th></tr>`;
+rows.forEach(([role, n, c, e, t]) => {
+html += `<tr> <th style="background:#f0f4fb;">${escapeHTML(role)}</th> <td${n?'':' class="empty"'}>${escapeHTML(n)||'—'}</td> <td${c?'':' class="empty"'}>${escapeHTML(c)||'—'}</td> <td${e?'':' class="empty"'}>${escapeHTML(e)||'—'}</td> <td${t?'':' class="empty"'}>${escapeHTML(t)||'—'}</td> </tr>`;
+});
+html += `</table>`;
+return html;
+}
+
+/* ———————————————————————
+INIT
+——————————————————————— */
+initCompetenciasA();
+addLO(‘esco_list’,‘ESCO’);
+addLO(‘otro_list’,‘Otro’);
+addCurso();
+addActividad();
+addSeguimiento();
+</script>
+
+</body>
+</html>
