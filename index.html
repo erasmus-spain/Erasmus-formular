@@ -39,43 +39,34 @@ line-height: 1.45;
 
 /* Toolbar */
 .toolbar {
-position: -webkit-sticky;
-position: sticky;
-top: 0;
-z-index: 100;
 background-color: #003399;
-background: #003399;
 color: #ffffff;
-padding: 12px 16px;
+padding: 14px 16px;
 box-shadow: 0 2px 6px rgba(0,0,0,.15);
-width: 100%;
 box-sizing: border-box;
 }
 .toolbar h1 {
 font-size: 16px;
-margin: 0 0 10px 0;
+margin: 0 0 12px 0;
 padding: 0;
 font-weight: 600;
 color: #ffffff;
-display: block;
 }
 .toolbar h1 .sub {
 font-weight: 400;
-opacity: .85;
+opacity: .9;
 font-size: 13px;
 margin-left: 8px;
 color: #ffffff;
 }
 .toolbar .btn-group {
-display: flex;
-flex-wrap: wrap;
-gap: 6px;
-width: 100%;
+font-size: 0; /* whitespace zwischen inline-blocks entfernen */
 }
-.toolbar .btn {
-flex: 1 1 auto;
-min-width: 0;
-text-align: center;
+.toolbar .btn-group .btn {
+display: inline-block;
+margin: 3px 4px 3px 0;
+font-size: 13px;
+vertical-align: top;
 }
 @media (min-width: 900px) {
 .toolbar {
@@ -83,9 +74,7 @@ display: flex;
 align-items: center;
 gap: 14px;
 }
-.toolbar h1 { margin: 0; flex: 1 1 auto; }
-.toolbar .btn-group { flex: 0 0 auto; width: auto; }
-.toolbar .btn { flex: 0 0 auto; }
+.toolbar h1 { margin: 0; flex: 1; }
 }
 
 .btn {
@@ -629,16 +618,16 @@ font-weight: 600;
      TOOLBAR
 ===================================================================== -->
 
-<div class="toolbar">
-  <h1>Europass · Acuerdo de aprendizaje <span class="sub">IES Josep Segrelles</span></h1>
-  <div class="btn-group">
-    <button class="btn primary" onclick="goPrint()">🖨️ Imprimir / Guardar PDF</button>
-    <button class="btn secondary" onclick="exportJSON()" title="Guardar los datos como archivo JSON para continuar más tarde">💾 Guardar borrador</button>
-    <span class="btn btn-file secondary" title="Cargar un borrador guardado previamente">
+<div class="toolbar" style="background-color: #003399; color: #ffffff; padding: 14px 16px; box-shadow: 0 2px 6px rgba(0,0,0,.15);">
+  <h1 style="color: #ffffff; margin: 0 0 12px 0; font-size: 16px;">Europass · Acuerdo de aprendizaje <span class="sub" style="font-weight: 400; opacity: .9; font-size: 13px; margin-left: 8px;">IES Josep Segrelles</span></h1>
+  <div class="btn-group" style="display: block; margin-top: 8px;">
+    <button class="btn primary" onclick="goPrint()" style="background-color: #ffcc00; color: #002266; border: 1px solid #ffcc00; padding: 9px 14px; font-size: 13px; font-weight: 700; border-radius: 4px; cursor: pointer; margin: 3px 4px 3px 0; display: inline-block;">🖨️ Imprimir / Guardar PDF</button>
+    <button class="btn secondary" onclick="exportJSON()" style="background-color: rgba(255,255,255,0.2); color: #ffffff; border: 1px solid rgba(255,255,255,0.6); padding: 9px 14px; font-size: 13px; font-weight: 600; border-radius: 4px; cursor: pointer; margin: 3px 4px 3px 0; display: inline-block;" title="Guardar los datos como archivo JSON para continuar más tarde">💾 Guardar borrador</button>
+    <span class="btn btn-file secondary" style="background-color: rgba(255,255,255,0.2); color: #ffffff; border: 1px solid rgba(255,255,255,0.6); padding: 9px 14px; font-size: 13px; font-weight: 600; border-radius: 4px; cursor: pointer; margin: 3px 4px 3px 0; display: inline-block; position: relative; overflow: hidden;" title="Cargar un borrador guardado previamente">
       📂 Cargar borrador
-      <input type="file" accept="application/json,.json" onchange="importJSON(event)">
+      <input type="file" accept="application/json,.json" onchange="importJSON(event)" style="position: absolute; inset: 0; opacity: 0; cursor: pointer;">
     </span>
-    <button class="btn secondary" onclick="resetForm()">🗑️ Limpiar</button>
+    <button class="btn secondary" onclick="resetForm()" style="background-color: rgba(255,255,255,0.2); color: #ffffff; border: 1px solid rgba(255,255,255,0.6); padding: 9px 14px; font-size: 13px; font-weight: 600; border-radius: 4px; cursor: pointer; margin: 3px 4px 3px 0; display: inline-block;">🗑️ Limpiar</button>
   </div>
 </div>
 
