@@ -1552,8 +1552,12 @@ html += `</table>`;
 }
 
 // ––––– FIRMAS –––––
-html += `<h2 class="section-title">Firmas</h2>
-<div class="signatures avoid-break">
+const isPost = (d.tipo_documento || ‘’).toLowerCase().includes(‘certificado’);
+html += `<h2 class="section-title">Firmas</h2>`;
+if (isPost) {
+html += `<p style="font-size: 9pt; font-style: italic; margin: 0 0 8px; color: #333;">Los firmantes certifican la validez y precisión de la información que contiene este documento.</p>`;
+}
+html += `<div class="signatures avoid-break">
 <div class="sig-box">
 <div class="sig-title">Organización de envío</div>
 <div class="sig-row"><strong>${escapeHTML(d.firma_env_org)||’—’}</strong></div>
@@ -1585,6 +1589,10 @@ html += `<h2 class="section-title">Firmas</h2>
 </div>
 
 ```
+<div style="margin-top: 14px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 8pt; font-style: italic; color: #555; line-height: 1.3;">
+  Movilidad Europass es un documento europeo tipificado, que describe en detalle el contenido y los resultados obtenidos por una persona durante una estancia en otro país europeo con fines formativos.
+</div>
+
 <div class="footer">
   <span>© Unión Europea, 2005-2023 · https://europa.eu/europass/</span>
   <span>Movilidad Europass</span>
